@@ -167,50 +167,43 @@
             transition: width 0.3s;
         }
 
-        /* Стили для фото */
-        .profile-photo {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto;
-            border-radius: 50%;
+        /* Стили для полностраничного фото */
+        .fullscreen-photo {
+            width: 100%;
+            height: 100vh;
+            position: relative;
             overflow: hidden;
-            border: 4px solid var(--header-color);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: transform 0.3s, filter 0.3s;
         }
 
-        .profile-photo img {
+        .fullscreen-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.5s;
         }
 
-        .dark-mode .profile-photo {
-            filter: brightness(0.9);
+        .fullscreen-photo:hover img {
+            transform: scale(1.03);
         }
 
-        .profile-photo:hover {
-            transform: scale(1.05);
+        .dark-mode .fullscreen-photo img {
+            filter: brightness(0.8);
         }
     </style>
 </head>
 <body>
     <button id="theme-toggle">🌓 Тёмная тема</button>
 
+    <!-- Полностраничное фото -->
+    <div class="fullscreen-photo">
+        <img src="myphoto.jpg" alt="Фото">
+    </div>
+
     <header>
         <h1>MEGAPAGE</h1>
     </header>
 
     <main>
-        <!-- Добавленное фото -->
-        <div class="card" style="text-align: center;">
-            <h2>Автор сайта</h2>
-            <div class="profile-photo">
-                <img src="myphoto.jpg" alt="">
-            </div>
-            <p style="margin-top: 15px;"></p>
-        </div>
-
         <div class="card">
             <h2>Крутые анимации</h2>
             <p>При прокрутке страницы элементы плавно появляются!</p>
