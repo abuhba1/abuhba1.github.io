@@ -166,6 +166,32 @@
             width: 100%;
             transition: width 0.3s;
         }
+
+        /* Стили для фото */
+        .profile-photo {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid var(--header-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.3s, filter 0.3s;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .dark-mode .profile-photo {
+            filter: brightness(0.9);
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -176,6 +202,15 @@
     </header>
 
     <main>
+        <!-- Добавленное фото -->
+        <div class="card" style="text-align: center;">
+            <h2>Автор сайта</h2>
+            <div class="profile-photo">
+                <img src="myphoto.jpg" alt="">
+            </div>
+            <p style="margin-top: 15px;"></p>
+        </div>
+
         <div class="card">
             <h2>Крутые анимации</h2>
             <p>При прокрутке страницы элементы плавно появляются!</p>
