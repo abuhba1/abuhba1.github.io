@@ -3,49 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой сайт</title>
+    <title>Крутой сайт с анимациями и игрой</title>
     <style>
+        :root {
+            --bg-color: #f0f0f0;
+            --text-color: #333;
+            --header-color: #4CAF50;
+            --card-bg: white;
+        }
+
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #f0f0f0;
+            --header-color: #1a5276;
+            --card-bg: #1e1e1e;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
+            transition: background 0.3s, color 0.3s;
         }
+
         header {
-            background-color: #4CAF50;
+            background-color: var(--header-color);
             color: white;
             padding: 20px;
+            text-align: center;
         }
-        main {
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
             padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform 0.5s, opacity 0.5s;
         }
-        footer {
-            background-color: #333;
+
+        .card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        button {
+            background-color: var(--header-color);
             color: white;
-            padding: 10px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        #theme-toggle {
             position: fixed;
-            bottom: 0;
-            width: 100%;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        #game {
+            text-align: center;
+        }
+
+        #guess-input {
+            padding: 8px;
+            margin: 10px;
         }
     </style>
 </head>
 <body>
+    <button id="theme-toggle">🌓 Тёмная тема</button>
+
     <header>
         <h1>Добро пожаловать на мой сайт!</h1>
     </header>
+
     <main>
-        <p>Это простой пример статического сайта.</p>
-        <button onclick="showMessage()">Нажми меня</button>
-        <p id="demo"></p>
+        <div class="card">
+            <h2>Крутые анимации</h2>
+            <p>При прокрутке страницы элементы плавно появляются!</p>
+        </div>
+
+        <div class="card">
+            <h2>Тёмная тема</h2>
+            <p>Нажмите кнопку в углу, чтобы изменить тему.</p>
+        </div>
+
+        <div class="card" id="game">
+            <h2>Мини-игра: Угадай число</h2>
+            <p>Я загадал число от 1 до 100. Попробуй угадать!</p>
+            <input type="number" id="guess-input" min="1" max="100">
+            <button onclick="checkGuess()">Проверить</button>
+            <p id="hint"></p>
+        </div>
     </main>
+
     <footer>
-        <p>© 2023 Мой сайт</p>
+        <p>© 2023 Мой крутой сайт</p>
     </footer>
 
     <script>
-        function showMessage() {
-            document.getElementById("demo").innerHTML = "Вы нажали кнопку!";
+        // Тёмная тема
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️ Светлая тема' : '🌓 Тёмная тема';
+        });
+
+        // Анимации при скролле
+        const cards = document.querySelectorAll('.card');
+        function checkCards() {
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                if (cardTop < window.innerHeight - 100) {
+                    card.classList.add('visible');
+                }
+            });
+        }
+        window.addEventListener('scroll', checkCards);
+        checkCards(); // Проверить при загрузке
+
+        // Мини-игра
+        const secretNumber = Math.floor(Math.random() * 100) + 1;
+        function checkGuess() {
+            const guess = parseInt(document.getElementById('guess-input').value);
+            const hint = document.getElementById('hint');
+
+            if (isNaN(guess)) {
+                hint.textContent = 'Введите число!';
+                return;
+            }
+
+            if (guess === secretNumber) {
+                hint.textContent = '🎉 Правильно! Вы угадали!';
+            } else if (guess < secretNumber) {
+                hint.textContent = '⬆️ Загаданное число больше.';
+            } else {
+                hint.textContent = '⬇️ Загаданное число меньше.';
+            }
         }
     </script>
 </body>
