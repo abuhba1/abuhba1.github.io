@@ -10,6 +10,8 @@
             --text-color: #333;
             --header-color: #4CAF50;
             --card-bg: white;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
         }
 
         .dark-mode {
@@ -17,6 +19,8 @@
             --text-color: #f0f0f0;
             --header-color: #1a5276;
             --card-bg: #1e1e1e;
+            --error-color: #c0392b;
+            --success-color: #27ae60;
         }
 
         body {
@@ -59,7 +63,8 @@
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: transform 0.2s, background-color 0.2s;
+            margin: 5px;
         }
 
         button:hover {
@@ -78,8 +83,88 @@
         }
 
         #guess-input {
-            padding: 8px;
+            padding: 10px;
             margin: 10px;
+            border: 2px solid var(--header-color);
+            border-radius: 5px;
+            width: 150px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        #guess-input:focus {
+            outline: none;
+            border-color: var(--success-color);
+        }
+
+        #hint {
+            min-height: 24px;
+            margin: 15px 0;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .success {
+            color: var(--success-color);
+        }
+
+        .error {
+            color: var(--error-color);
+        }
+
+        #attempts-counter {
+            margin: 10px 0;
+            font-style: italic;
+        }
+
+        #history {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 5px;
+        }
+
+        .history-item {
+            padding: 5px;
+            margin: 3px 0;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .history-item:nth-child(even) {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .close {
+            color: var(--error-color);
+        }
+
+        .hot {
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+        .new-game-btn {
+            background-color: var(--error-color);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            background-color: var(--header-color);
+            width: 100%;
+            transition: width 0.3s;
         }
     </style>
 </head>
@@ -87,7 +172,7 @@
     <button id="theme-toggle">🌓 Тёмная тема</button>
 
     <header>
-        <h1>Megapage</h1>
+        <h1>MEGAPAGE</h1>
     </header>
 
     <main>
@@ -103,15 +188,29 @@
 
         <div class="card" id="game">
             <h2>Мини-игра: Угадай число</h2>
-            <p>Я загадал число от 1 до 100. Попробуй угадать!</p>
-            <input type="number" id="guess-input" min="1" max="100">
+            <p>Я загадал число от 1 до 100. У вас есть 10 попыток!</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="attempts-counter">Попыток: 0/10</div>
+            
+            <input type="number" id="guess-input" min="1" max="100" placeholder="Введите число">
             <button onclick="checkGuess()">Проверить</button>
+            <button class="new-game-btn" onclick="newGame()">Новая игра</button>
+            
             <p id="hint"></p>
+            
+            <div id="history">
+                <strong>История попыток:</strong>
+                <div id="history-list"></div>
+            </div>
         </div>
     </main>
 
     <footer>
-        <p>© ООО"ГоДэмм" 2026</p>
+        <p> © ООО"ГоДэмм" 2025 </p>
     </footer>
 
     <script>
@@ -136,24 +235,102 @@
         checkCards(); // Проверить при загрузке
 
         // Мини-игра
-        const secretNumber = Math.floor(Math.random() * 100) + 1;
-        function checkGuess() {
-            const guess = parseInt(document.getElementById('guess-input').value);
-            const hint = document.getElementById('hint');
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        const maxAttempts = 10;
+        let gameOver = false;
 
-            if (isNaN(guess)) {
-                hint.textContent = 'Введите число!';
+        function checkGuess() {
+            if (gameOver) return;
+            
+            const guessInput = document.getElementById('guess-input');
+            const guess = parseInt(guessInput.value);
+            const hint = document.getElementById('hint');
+            const historyList = document.getElementById('history-list');
+            const counter = document.getElementById('attempts-counter');
+            const progressBar = document.getElementById('progress-bar');
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                hint.textContent = 'Введите число от 1 до 100!';
+                hint.className = 'error';
                 return;
             }
 
+            attempts++;
+            counter.textContent = `Попыток: ${attempts}/${maxAttempts}`;
+            progressBar.style.width = `${100 - (attempts * 10)}%`;
+
+            // Добавляем в историю
+            const distance = Math.abs(guess - secretNumber);
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            if (distance <= 5) historyItem.classList.add('hot');
+            
+            historyItem.innerHTML = `
+                <span>Попытка ${attempts}: <strong>${guess}</strong></span>
+                <span>${getDistanceEmoji(distance)} ${getDistanceText(distance)}</span>
+            `;
+            historyList.prepend(historyItem);
+
+            // Проверка угадывания
             if (guess === secretNumber) {
-                hint.textContent = '🎉 Правильно! Вы угадали!';
-            } else if (guess < secretNumber) {
-                hint.textContent = '⬆️ Загаданное число больше.';
+                hint.innerHTML = '🎉 <strong>Поздравляем!</strong> Вы угадали число ' + secretNumber + ' за ' + attempts + ' попыток!';
+                hint.className = 'success';
+                gameOver = true;
+                progressBar.style.backgroundColor = 'var(--success-color)';
+                guessInput.disabled = true;
+            } else if (attempts >= maxAttempts) {
+                hint.innerHTML = '😢 <strong>Игра окончена!</strong> Было загадано число: ' + secretNumber;
+                hint.className = 'error';
+                gameOver = true;
+                progressBar.style.width = '0%';
+                guessInput.disabled = true;
             } else {
-                hint.textContent = '⬇️ Загаданное число меньше.';
+                hint.textContent = guess < secretNumber ? '⬆️ Загаданное число больше' : '⬇️ Загаданное число меньше';
+                hint.className = '';
             }
+
+            guessInput.value = '';
+            guessInput.focus();
         }
+
+        function getDistanceEmoji(distance) {
+            if (distance === 0) return '🎯';
+            if (distance <= 3) return '🔥';
+            if (distance <= 10) return '🔍';
+            if (distance <= 20) return '👀';
+            return '🌌';
+        }
+
+        function getDistanceText(distance) {
+            if (distance === 0) return 'Победа!';
+            if (distance <= 3) return 'Горячо!';
+            if (distance <= 10) return 'Тепло';
+            if (distance <= 20) return 'Холодно';
+            return 'Очень холодно';
+        }
+
+        function newGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            gameOver = false;
+            
+            document.getElementById('hint').textContent = '';
+            document.getElementById('hint').className = '';
+            document.getElementById('history-list').innerHTML = '';
+            document.getElementById('attempts-counter').textContent = 'Попыток: 0/10';
+            document.getElementById('guess-input').disabled = false;
+            document.getElementById('guess-input').focus();
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-bar').style.backgroundColor = 'var(--header-color)';
+        }
+
+        // Обработка нажатия Enter в поле ввода
+        document.getElementById('guess-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
     </script>
 </body>
 </html>
