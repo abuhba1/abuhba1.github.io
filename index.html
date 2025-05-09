@@ -23,6 +23,10 @@
             --success-color: #27ae60;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background-color: var(--bg-color);
@@ -30,23 +34,25 @@
             margin: 0;
             padding: 0;
             transition: background 0.3s, color 0.3s;
+            line-height: 1.6;
         }
 
         header {
             background-color: var(--header-color);
             color: white;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
+            position: relative;
         }
 
         .card {
             background-color: var(--card-bg);
             border-radius: 10px;
             padding: 20px;
-            margin: 20px auto;
+            margin: 15px auto;
             max-width: 600px;
-            width: 90%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: calc(100% - 30px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transform: translateY(20px);
             opacity: 0;
             transition: transform 0.5s, opacity 0.5s;
@@ -64,13 +70,15 @@
             padding: 12px 20px;
             border-radius: 5px;
             cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: all 0.3s;
             margin: 5px;
             font-size: 16px;
+            min-width: 120px;
         }
 
-        button:hover {
+        button:hover, button:focus {
             transform: scale(1.05);
+            opacity: 0.9;
         }
 
         #theme-toggle {
@@ -80,6 +88,8 @@
             z-index: 100;
             padding: 8px 12px;
             font-size: 14px;
+            background-color: rgba(0,0,0,0.2);
+            backdrop-filter: blur(5px);
         }
 
         #game {
@@ -87,14 +97,20 @@
         }
 
         #guess-input {
-            padding: 12px;
+            padding: 12px 15px;
             margin: 10px 0;
             border: 2px solid var(--header-color);
             border-radius: 5px;
-            width: 80%;
+            width: 100%;
             max-width: 200px;
             font-size: 16px;
             transition: border-color 0.3s;
+        }
+
+        #guess-input:focus {
+            outline: none;
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
         }
 
         #hint {
@@ -102,36 +118,185 @@
             margin: 15px 0;
             font-weight: bold;
             font-size: 18px;
+            padding: 10px;
+            border-radius: 5px;
         }
 
-        /* Адаптивные стили для мобильных */
-        @media (max-width: 600px) {
+        .success {
+            color: var(--success-color);
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+
+        .error {
+            color: var(--error-color);
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        #attempts-counter {
+            margin: 10px 0;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        #history {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 5px;
+        }
+
+        .history-item {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .history-item:nth-child(even) {
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        .hot {
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+        .new-game-btn {
+            background-color: var(--error-color);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            background-color: var(--header-color);
+            width: 100%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        /* Стили для фото */
+        .photo-container {
+            background-color: var(--card-bg);
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            width: calc(100% - 30px);
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .profile-photo {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            aspect-ratio: 1/1;
+            margin: 0 auto;
+            border-radius: 10px;
+            overflow: hidden;
+            border: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-photo:hover {
+            transform: scale(1.02);
+        }
+
+        footer {
+            background-color: var(--header-color);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        /* Адаптивные стили */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            h2 {
+                font-size: 20px;
+            }
+            
             .card {
                 padding: 15px;
-                margin: 15px auto;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 15px;
+                min-width: 110px;
             }
             
             #theme-toggle {
                 top: 10px;
                 right: 10px;
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+            
+            #guess-input {
+                padding: 10px 12px;
+                font-size: 15px;
             }
             
             .photo-container {
                 padding: 15px;
             }
-            
-            .profile-photo {
-                width: 100%;
-                height: 300px;
-            }
         }
 
-        /* Остальные стили остаются без изменений */
-        /* ... */
+        @media (max-width: 480px) {
+            .card {
+                margin: 10px auto;
+                width: calc(100% - 20px);
+            }
+            
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+            
+            .button-group {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            #history {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
-    <button id="theme-toggle">🌓 Тёмная тема</button>
+    <button id="theme-toggle" aria-label="Переключить тему">🌓 Тёмная тема</button>
 
     <header>
         <h1>MEGAPAGE</h1>
@@ -139,31 +304,208 @@
 
     <main>
         <div class="card">
-            <h2>Добро пожаловать</h2>
-            <p>Это адаптивный сайт, который отлично работает на любых устройствах!</p>
+            <h2>Интерактивные возможности</h2>
+            <p>Наслаждайтесь плавными анимациями и адаптивным дизайном на любом устройстве!</p>
         </div>
 
-        <!-- Остальной код без изменений -->
-        <!-- ... -->
+        <div class="card">
+            <h2>Тёмная тема</h2>
+            <p>Нажмите кнопку в углу, чтобы изменить цветовую тему сайта.</p>
+        </div>
+
+        <div class="card" id="game">
+            <h2>Мини-игра: Угадай число</h2>
+            <p>Я загадал число от 1 до 100. У вас есть 10 попыток!</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="attempts-counter">Попыток: 0/10</div>
+            
+            <input type="number" id="guess-input" min="1" max="100" placeholder="Введите число" aria-label="Введите число">
+            
+            <div class="button-group">
+                <button onclick="checkGuess()">Проверить</button>
+                <button class="new-game-btn" onclick="newGame()">Новая игра</button>
+            </div>
+            
+            <p id="hint" aria-live="polite"></p>
+            
+            <div id="history">
+                <strong>История попыток:</strong>
+                <div id="history-list"></div>
+            </div>
+        </div>
+
+        <!-- Контейнер с фото -->
+        <div class="photo-container">
+            <div class="profile-photo">
+                <img src="myphoto.jpg" alt="Пример изображения">
+            </div>
+        </div>
     </main>
 
+    <footer>
+        <p>© ООО "ГоДэмм" 2025</p>
+    </footer>
+
     <script>
-        // Адаптивный обработчик для мобильных устройств
+        // Тёмная тема
+        const themeToggle = document.getElementById('theme-toggle');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        // Проверка предпочтений системы
+        if (prefersDark) {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️ Светлая тема';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            themeToggle.textContent = isDark ? '☀️ Светлая тема' : '🌓 Тёмная тема';
+            
+            // Сохранение предпочтений
+            localStorage.setItem('darkMode', isDark);
+        });
+
+        // Проверка сохранённых предпочтений
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️ Светлая тема';
+        }
+
+        // Анимации при скролле с троттлингом
+        let isScrolling;
+        const cards = document.querySelectorAll('.card');
+        
+        function checkCards() {
+            cards.forEach(card => {
+                const cardTop = card.getBoundingClientRect().top;
+                if (cardTop < window.innerHeight - 100) {
+                    card.classList.add('visible');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', () => {
+            window.clearTimeout(isScrolling);
+            isScrolling = setTimeout(checkCards, 50);
+        }, { passive: true });
+        
+        checkCards(); // Проверить при загрузке
+
+        // Мини-игра
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        const maxAttempts = 10;
+        let gameOver = false;
+
+        function checkGuess() {
+            if (gameOver) return;
+            
+            const guessInput = document.getElementById('guess-input');
+            const guess = parseInt(guessInput.value);
+            const hint = document.getElementById('hint');
+            const historyList = document.getElementById('history-list');
+            const counter = document.getElementById('attempts-counter');
+            const progressBar = document.getElementById('progress-bar');
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                hint.textContent = 'Пожалуйста, введите число от 1 до 100!';
+                hint.className = 'error';
+                guessInput.focus();
+                return;
+            }
+
+            attempts++;
+            counter.textContent = `Попыток: ${attempts}/${maxAttempts}`;
+            progressBar.style.width = `${100 - (attempts * 10)}%`;
+
+            // Добавляем в историю
+            const distance = Math.abs(guess - secretNumber);
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            if (distance <= 5) historyItem.classList.add('hot');
+            
+            historyItem.innerHTML = `
+                <span>Попытка ${attempts}: <strong>${guess}</strong></span>
+                <span>${getDistanceEmoji(distance)} ${getDistanceText(distance)}</span>
+            `;
+            historyList.prepend(historyItem);
+
+            // Проверка угадывания
+            if (guess === secretNumber) {
+                hint.innerHTML = '🎉 <strong>Поздравляем!</strong> Вы угадали число ' + secretNumber + ' за ' + attempts + ' попыток!';
+                hint.className = 'success';
+                gameOver = true;
+                progressBar.style.backgroundColor = 'var(--success-color)';
+                guessInput.disabled = true;
+            } else if (attempts >= maxAttempts) {
+                hint.innerHTML = '😢 <strong>Игра окончена!</strong> Было загадано число: ' + secretNumber;
+                hint.className = 'error';
+                gameOver = true;
+                progressBar.style.width = '0%';
+                guessInput.disabled = true;
+            } else {
+                hint.textContent = guess < secretNumber ? '⬆️ Загаданное число больше' : '⬇️ Загаданное число меньше';
+                hint.className = '';
+            }
+
+            guessInput.value = '';
+            guessInput.focus();
+        }
+
+        function getDistanceEmoji(distance) {
+            if (distance === 0) return '🎯';
+            if (distance <= 3) return '🔥';
+            if (distance <= 10) return '🔍';
+            if (distance <= 20) return '👀';
+            return '🌌';
+        }
+
+        function getDistanceText(distance) {
+            if (distance === 0) return 'Победа!';
+            if (distance <= 3) return 'Горячо!';
+            if (distance <= 10) return 'Тепло';
+            if (distance <= 20) return 'Холодно';
+            return 'Очень холодно';
+        }
+
+        function newGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            gameOver = false;
+            
+            document.getElementById('hint').textContent = '';
+            document.getElementById('hint').className = '';
+            document.getElementById('history-list').innerHTML = '';
+            document.getElementById('attempts-counter').textContent = 'Попыток: 0/10';
+            document.getElementById('guess-input').disabled = false;
+            document.getElementById('guess-input').focus();
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-bar').style.backgroundColor = 'var(--header-color)';
+        }
+
+        // Обработка нажатия Enter в поле ввода
+        document.getElementById('guess-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+
+        // Адаптация для мобильных устройств
         function handleMobileFeatures() {
-            // Уменьшаем размер шрифта для маленьких экранов
-            if (window.innerWidth < 600) {
-                document.documentElement.style.fontSize = '14px';
+            if (window.innerWidth < 768) {
+                document.documentElement.style.fontSize = '15px';
             } else {
                 document.documentElement.style.fontSize = '16px';
             }
         }
 
-        // Вызываем при загрузке и изменении размера окна
         window.addEventListener('load', handleMobileFeatures);
         window.addEventListener('resize', handleMobileFeatures);
-
-        // Остальной JavaScript код без изменений
-        // ...
     </script>
 </body>
 </html>
