@@ -14,6 +14,7 @@
             --success-color: #2ecc71;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
+            --admin-color: #9b59b6;
         }
 
         [data-theme="dark"] {
@@ -24,6 +25,7 @@
             --error-color: #c0392b;
             --success-color: #27ae60;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            --admin-color: #8e44ad;
         }
 
         * {
@@ -46,18 +48,23 @@
         header {
             background-color: var(--header-color);
             color: white;
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
             box-shadow: var(--shadow);
             position: relative;
+            z-index: 10;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        .header-title {
+            flex: 1;
+        }
+
         .auth-buttons {
             display: flex;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
         main {
@@ -75,6 +82,14 @@
             margin: 1.5rem auto;
             max-width: 600px;
             box-shadow: var(--shadow);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .card.visible {
+            transform: translateY(0);
+            opacity: 1;
         }
 
         button {
@@ -94,18 +109,111 @@
             transform: translateY(-2px);
         }
 
-        input, textarea {
-            width: 100%;
-            padding: 0.75rem;
-            margin: 0.5rem 0;
-            border: 1px solid #ddd;
+        button.admin {
+            background-color: var(--admin-color);
+        }
+
+        #theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            padding: 0.5rem 1rem;
+            background-color: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 50px;
+        }
+
+        #game {
+            text-align: center;
+        }
+
+        input, textarea, select {
+            padding: 0.75rem 1rem;
+            margin: 1rem 0;
+            border: 2px solid var(--header-color);
             border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
             font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--card-bg);
+            color: var(--text-color);
         }
 
         textarea {
             min-height: 100px;
             resize: vertical;
+        }
+
+        #hint {
+            min-height: 24px;
+            margin: 1rem 0;
+            font-weight: bold;
+            font-size: 1.125rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .success {
+            color: var(--success-color);
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+
+        .error {
+            color: var(--error-color);
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+
+        #attempts-counter {
+            margin: 1rem 0;
+            font-style: italic;
+        }
+
+        #history {
+            margin-top: 1.5rem;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 1rem;
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+
+        .history-item {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hot {
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+        .new-game-btn {
+            background-color: var(--error-color);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 5px;
+            background-color: var(--header-color);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .comment-section {
+            margin-top: 2rem;
         }
 
         .comment {
@@ -114,292 +222,417 @@
             margin: 1rem 0;
             border-radius: 8px;
             box-shadow: var(--shadow);
+            position: relative;
         }
 
         .comment-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 0.5rem;
-            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--text-color);
+            opacity: 0.8;
         }
 
-        .delete-btn {
-            background-color: var(--error-color);
-            padding: 0.25rem 0.5rem;
-            font-size: 0.8rem;
+        .comment-content {
+            margin-top: 0.5rem;
         }
 
-        .admin-panel {
-            background-color: #ffeb3b;
-            color: #000;
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 8px;
+        .delete-comment {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: var(--error-color);
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition);
         }
 
-        .hidden {
-            display: none;
+        .comment:hover .delete-comment {
+            opacity: 1;
         }
 
         footer {
             background-color: var(--header-color);
             color: white;
-            padding: 1rem;
+            padding: 1.5rem;
             text-align: center;
+            margin-top: 2rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--header-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .admin-badge {
+            background-color: var(--admin-color);
+            color: white;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            button, input, textarea, select {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .auth-buttons {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
+    <button id="theme-toggle">🌓 Тёмная тема</button>
+
     <header>
-        <h1>MEGAPAGE</h1>
-        <div class="auth-buttons">
-            <button id="login-btn">Вход</button>
+        <div class="header-title">
+            <h1>MEGAPAGE</h1>
+        </div>
+        <div class="auth-buttons" id="auth-buttons">
+            <button id="login-btn">Войти</button>
             <button id="register-btn">Регистрация</button>
-            <button id="logout-btn" class="hidden">Выйти</button>
+        </div>
+        <div class="user-info hidden" id="user-info">
+            <div class="avatar" id="user-avatar">U</div>
+            <span id="username-display">Пользователь</span>
+            <button id="logout-btn">Выйти</button>
         </div>
     </header>
 
     <main>
-        <!-- Формы авторизации -->
-        <div id="login-form" class="card hidden">
-            <h2>Вход</h2>
-            <input type="text" id="login-username" placeholder="Имя пользователя">
-            <input type="password" id="login-password" placeholder="Пароль">
-            <button id="submit-login">Войти</button>
-            <button id="cancel-login">Отмена</button>
+        <div class="card">
+            <h2>Интерактивный сайт</h2>
+            <p>Добро пожаловать на наш адаптивный сайт с игрой и комментариями!</p>
         </div>
 
-        <div id="register-form" class="card hidden">
-            <h2>Регистрация</h2>
-            <input type="text" id="register-username" placeholder="Имя пользователя">
-            <input type="password" id="register-password" placeholder="Пароль">
-            <input type="password" id="register-confirm" placeholder="Подтвердите пароль">
-            <button id="submit-register">Зарегистрироваться</button>
-            <button id="cancel-register">Отмена</button>
+        <div class="card" id="game">
+            <h2>Мини-игра: Угадай число</h2>
+            <p>Я загадал число от 1 до 100. У вас есть 10 попыток!</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div id="attempts-counter">Попыток: 0/10</div>
+            
+            <input type="number" id="guess-input" min="1" max="100" placeholder="Введите число">
+            <button onclick="checkGuess()">Проверить</button>
+            <button class="new-game-btn" onclick="newGame()">Новая игра</button>
+            
+            <p id="hint"></p>
+            
+            <div id="history">
+                <strong>История попыток:</strong>
+                <div id="history-list"></div>
+            </div>
         </div>
 
-        <!-- Блок комментариев -->
-        <div id="comments-section" class="card">
+        <div class="card comment-section">
             <h2>Комментарии</h2>
-            <div id="comments-list"></div>
-            <textarea id="comment-text" placeholder="Оставьте ваш комментарий"></textarea>
-            <button id="submit-comment">Отправить</button>
-        </div>
-
-        <!-- Админ-панель -->
-        <div id="admin-panel" class="admin-panel hidden">
-            <h2>Админ-панель</h2>
-            <div id="admin-comments-list"></div>
+            <div id="comments-container"></div>
+            <textarea id="comment-input" placeholder="Оставьте ваш комментарий..."></textarea>
+            <button onclick="addComment()">Отправить комментарий</button>
         </div>
     </main>
 
+    <!-- Модальные окна -->
+    <div class="modal hidden" id="login-modal">
+        <div class="modal-content">
+            <h2>Вход в аккаунт</h2>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" placeholder="Ваш email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Пароль</label>
+                    <input type="password" id="login-password" placeholder="Ваш пароль">
+                </div>
+                <div class="modal-actions">
+                    <button onclick="closeModal('login-modal')">Отмена</button>
+                    <button onclick="login()">Войти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="register-modal">
+        <div class="modal-content">
+            <h2>Регистрация</h2>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label for="register-name">Имя</label>
+                    <input type="text" id="register-name" placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" placeholder="Ваш email">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Пароль</label>
+                    <input type="password" id="register-password" placeholder="Придумайте пароль">
+                </div>
+                <div class="form-group">
+                    <label for="register-role">Роль</label>
+                    <select id="register-role">
+                        <option value="user">Пользователь</option>
+                        <option value="admin">Администратор</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button onclick="closeModal('register-modal')">Отмена</button>
+                    <button onclick="register()">Зарегистрироваться</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="admin-modal">
+        <div class="modal-content">
+            <h2>Административная панель</h2>
+            <div id="admin-content">
+                <h3>Пользователи</h3>
+                <div id="users-list"></div>
+                
+                <h3>Комментарии</h3>
+                <div id="admin-comments-list"></div>
+            </div>
+            <div class="modal-actions">
+                <button onclick="closeModal('admin-modal')">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
-        <p>© 2023</p>
+        <p>© 2025 MEGAPAGE</p>
     </footer>
 
     <script>
-        // Данные пользователей и комментариев
-        let users = JSON.parse(localStorage.getItem('users')) || [];
-        let comments = JSON.parse(localStorage.getItem('comments')) || [];
-        let currentUser = null;
-        const ADMIN_USERNAME = 'admin';
+        // Тема
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            html.setAttribute('data-theme', savedTheme);
+            themeToggle.textContent = savedTheme === 'dark' ? '☀️ Светлая тема' : '🌓 Тёмная тема';
+        }
 
-        // DOM элементы
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        const logoutBtn = document.getElementById('logout-btn');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const commentsSection = document.getElementById('comments-section');
-        const commentsList = document.getElementById('comments-list');
-        const adminPanel = document.getElementById('admin-panel');
-        const adminCommentsList = document.getElementById('admin-comments-list');
-
-        // Инициализация
-        checkAuth();
-
-        // Обработчики событий
-        loginBtn.addEventListener('click', () => {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️ Светлая тема' : '🌓 Тёмная тема';
         });
 
-        registerBtn.addEventListener('click', () => {
-            registerForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-        });
-
-        logoutBtn.addEventListener('click', logout);
-
-        document.getElementById('cancel-login').addEventListener('click', () => {
-            loginForm.classList.add('hidden');
-        });
-
-        document.getElementById('cancel-register').addEventListener('click', () => {
-            registerForm.classList.add('hidden');
-        });
-
-        document.getElementById('submit-login').addEventListener('click', login);
-        document.getElementById('submit-register').addEventListener('click', register);
-        document.getElementById('submit-comment').addEventListener('click', addComment);
-
-        // Функции
-        function checkAuth() {
-            const authUser = localStorage.getItem('currentUser');
-            if (authUser) {
-                currentUser = JSON.parse(authUser);
-                updateUI();
-            }
-        }
-
-        function login() {
-            const username = document.getElementById('login-username').value;
-            const password = document.getElementById('login-password').value;
-
-            const user = users.find(u => u.username === username && u.password === password);
-            if (user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                loginForm.classList.add('hidden');
-                updateUI();
-            } else {
-                alert('Неверное имя пользователя или пароль');
-            }
-        }
-
-        function register() {
-            const username = document.getElementById('register-username').value;
-            const password = document.getElementById('register-password').value;
-            const confirm = document.getElementById('register-confirm').value;
-
-            if (password !== confirm) {
-                alert('Пароли не совпадают');
-                return;
-            }
-
-            if (users.some(u => u.username === username)) {
-                alert('Пользователь с таким именем уже существует');
-                return;
-            }
-
-            const newUser = { username, password };
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            
-            currentUser = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(newUser));
-            registerForm.classList.add('hidden');
-            updateUI();
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            updateUI();
-        }
-
-        function addComment() {
-            if (!currentUser) {
-                alert('Для добавления комментария необходимо авторизоваться');
-                return;
-            }
-
-            const text = document.getElementById('comment-text').value;
-            if (!text.trim()) {
-                alert('Комментарий не может быть пустым');
-                return;
-            }
-
-            const newComment = {
-                id: Date.now(),
-                username: currentUser.username,
-                text: text,
-                date: new Date().toLocaleString()
-            };
-
-            comments.push(newComment);
-            localStorage.setItem('comments', JSON.stringify(comments));
-            document.getElementById('comment-text').value = '';
-            renderComments();
-        }
-
-        function deleteComment(id) {
-            comments = comments.filter(c => c.id !== id);
-            localStorage.setItem('comments', JSON.stringify(comments));
-            renderComments();
-            renderAdminComments();
-        }
-
-        function updateUI() {
-            if (currentUser) {
-                loginBtn.classList.add('hidden');
-                registerBtn.classList.add('hidden');
-                logoutBtn.classList.remove('hidden');
-                commentsSection.classList.remove('hidden');
-
-                if (currentUser.username === ADMIN_USERNAME) {
-                    adminPanel.classList.remove('hidden');
-                    renderAdminComments();
-                } else {
-                    adminPanel.classList.add('hidden');
+        // Анимации карточек
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
                 }
-            } else {
-                loginBtn.classList.remove('hidden');
-                registerBtn.classList.remove('hidden');
-                logoutBtn.classList.add('hidden');
-                commentsSection.classList.add('hidden');
-                adminPanel.classList.add('hidden');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Игра
+        let secretNumber = Math.floor(Math.random() * 100) + 1;
+        let attempts = 0;
+        const maxAttempts = 10;
+        let gameOver = false;
+
+        function checkGuess() {
+            if (gameOver) return;
+            
+            const guessInput = document.getElementById('guess-input');
+            const guess = parseInt(guessInput.value);
+            const hint = document.getElementById('hint');
+            const historyList = document.getElementById('history-list');
+            const counter = document.getElementById('attempts-counter');
+            const progressBar = document.getElementById('progress-bar');
+
+            if (isNaN(guess) || guess < 1 || guess > 100) {
+                hint.textContent = 'Введите число от 1 до 100!';
+                hint.className = 'error';
+                return;
             }
 
-            renderComments();
+            attempts++;
+            counter.textContent = `Попыток: ${attempts}/${maxAttempts}`;
+            progressBar.style.width = `${100 - (attempts * 10)}%`;
+
+            const distance = Math.abs(guess - secretNumber);
+            const historyItem = document.createElement('div');
+            historyItem.className = `history-item ${distance <= 5 ? 'hot' : ''}`;
+            historyItem.innerHTML = `
+                <span>Попытка ${attempts}: <strong>${guess}</strong></span>
+                <span>${getDistanceEmoji(distance)} ${getDistanceText(distance)}</span>
+            `;
+            historyList.prepend(historyItem);
+
+            if (guess === secretNumber) {
+                hint.innerHTML = '🎉 <strong>Поздравляем!</strong> Вы угадали число ' + secretNumber + ' за ' + attempts + ' попыток!';
+                hint.className = 'success';
+                gameOver = true;
+                progressBar.style.backgroundColor = 'var(--success-color)';
+                guessInput.disabled = true;
+            } else if (attempts >= maxAttempts) {
+                hint.innerHTML = '😢 <strong>Игра окончена!</strong> Было загадано число: ' + secretNumber;
+                hint.className = 'error';
+                gameOver = true;
+                progressBar.style.width = '0%';
+                guessInput.disabled = true;
+            } else {
+                hint.textContent = guess < secretNumber ? '⬆️ Загаданное число больше' : '⬇️ Загаданное число меньше';
+                hint.className = '';
+            }
+
+            guessInput.value = '';
+            guessInput.focus();
         }
 
-        function renderComments() {
-            commentsList.innerHTML = '';
-            comments.forEach(comment => {
-                const commentElement = document.createElement('div');
-                commentElement.className = 'comment';
-                commentElement.innerHTML = `
-                    <div class="comment-header">
-                        <span>${comment.username}</span>
-                        <span>${comment.date}</span>
-                    </div>
-                    <p>${comment.text}</p>
-                `;
-                commentsList.appendChild(commentElement);
-            });
+        function getDistanceEmoji(distance) {
+            if (distance === 0) return '🎯';
+            if (distance <= 3) return '🔥';
+            if (distance <= 10) return '🔍';
+            if (distance <= 20) return '👀';
+            return '🌌';
         }
 
-        function renderAdminComments() {
-            adminCommentsList.innerHTML = '<h3>Все комментарии</h3>';
-            comments.forEach(comment => {
-                const commentElement = document.createElement('div');
-                commentElement.className = 'comment';
-                commentElement.innerHTML = `
-                    <div class="comment-header">
-                        <span>${comment.username}</span>
-                        <span>${comment.date}</span>
-                        <button class="delete-btn" data-id="${comment.id}">Удалить</button>
-                    </div>
-                    <p>${comment.text}</p>
-                `;
-                adminCommentsList.appendChild(commentElement);
-            });
-
-            // Добавляем обработчики для кнопок удаления
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const id = parseInt(e.target.getAttribute('data-id'));
-                    deleteComment(id);
-                });
-            });
+        function getDistanceText(distance) {
+            if (distance === 0) return 'Победа!';
+            if (distance <= 3) return 'Горячо!';
+            if (distance <= 10) return 'Тепло';
+            if (distance <= 20) return 'Холодно';
+            return 'Очень холодно';
         }
 
-        // Создаем администратора при первом запуске
-        if (!users.some(u => u.username === ADMIN_USERNAME)) {
-            users.push({ username: ADMIN_USERNAME, password: 'admin123' });
+        function newGame() {
+            secretNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            gameOver = false;
+            
+            document.getElementById('hint').textContent = '';
+            document.getElementById('hint').className = '';
+            document.getElementById('history-list').innerHTML = '';
+            document.getElementById('attempts-counter').textContent = 'Попыток: 0/10';
+            document.getElementById('guess-input').disabled = false;
+            document.getElementById('guess-input').focus();
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-bar').style.backgroundColor = 'var(--header-color)';
+        }
+
+        document.getElementById('guess-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+
+        // Система пользователей и комментариев
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
+        let users = JSON.parse(localStorage.getItem('users')) || [
+            { id: 1, name: 'Admin', email: 'admin@example.com', password: 'admin123', role: 'admin' }
+        ];
+        let comments = JSON.parse(localStorage.getItem('comments')) || [];
+
+        // Инициализация хранилища, если оно пустое
+        if (!localStorage.getItem('users')) {
             localStorage.setItem('users', JSON.stringify(users));
         }
-    </script>
-</body>
-</html>
+        if (!localStorage.getItem('comments')) {
+            localStorage.setItem('comments', JSON.stringify(comments));
+        }
+
+        // Функции для работы с модальными окнами
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        // Регистрация
+        function register() {
+            const name = document.getElementById('register-name').value.trim();
+            const email = document.getElementById('re
