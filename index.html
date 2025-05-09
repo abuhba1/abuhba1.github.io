@@ -1,511 +1,405 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Megapage</title>
+    <title>MEGAPAGE</title>
     <style>
         :root {
-            --bg-color: #f0f0f0;
+            --bg-color: #f5f5f5;
             --text-color: #333;
             --header-color: #4CAF50;
-            --card-bg: white;
+            --card-bg: #ffffff;
             --error-color: #e74c3c;
             --success-color: #2ecc71;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
-        .dark-mode {
+        [data-theme="dark"] {
             --bg-color: #121212;
             --text-color: #f0f0f0;
             --header-color: #1a5276;
             --card-bg: #1e1e1e;
             --error-color: #c0392b;
             --success-color: #27ae60;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            transition: background 0.3s, color 0.3s;
             line-height: 1.6;
+            transition: var(--transition);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
             background-color: var(--header-color);
             color: white;
-            padding: 15px;
+            padding: 1rem;
             text-align: center;
+            box-shadow: var(--shadow);
             position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        main {
+            flex: 1;
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px auto;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem auto;
             max-width: 600px;
-            width: calc(100% - 30px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transform: translateY(20px);
-            opacity: 0;
-            transition: transform 0.5s, opacity 0.5s;
-        }
-
-        .card.visible {
-            transform: translateY(0);
-            opacity: 1;
+            box-shadow: var(--shadow);
         }
 
         button {
             background-color: var(--header-color);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 5px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
-            margin: 5px;
-            font-size: 16px;
-            min-width: 120px;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 1rem;
         }
 
-        button:hover, button:focus {
-            transform: scale(1.05);
-            opacity: 0.9;
+        button:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
         }
 
-        #theme-toggle {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            z-index: 100;
-            padding: 8px 12px;
-            font-size: 14px;
-            background-color: rgba(0,0,0,0.2);
-            backdrop-filter: blur(5px);
-        }
-
-        #game {
-            text-align: center;
-        }
-
-        #guess-input {
-            padding: 12px 15px;
-            margin: 10px 0;
-            border: 2px solid var(--header-color);
-            border-radius: 5px;
+        input, textarea {
             width: 100%;
-            max-width: 200px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
         }
 
-        #guess-input:focus {
-            outline: none;
-            border-color: var(--success-color);
-            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.2);
+        textarea {
+            min-height: 100px;
+            resize: vertical;
         }
 
-        #hint {
-            min-height: 24px;
-            margin: 15px 0;
-            font-weight: bold;
-            font-size: 18px;
-            padding: 10px;
-            border-radius: 5px;
+        .comment {
+            background-color: var(--card-bg);
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
         }
 
-        .success {
-            color: var(--success-color);
-            background-color: rgba(46, 204, 113, 0.1);
-        }
-
-        .error {
-            color: var(--error-color);
-            background-color: rgba(231, 76, 60, 0.1);
-        }
-
-        #attempts-counter {
-            margin: 10px 0;
-            font-style: italic;
-            font-size: 14px;
-        }
-
-        #history {
-            margin-top: 20px;
-            text-align: left;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 10px;
-            background-color: rgba(0,0,0,0.05);
-            border-radius: 5px;
-        }
-
-        .history-item {
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 5px;
+        .comment-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
         }
 
-        .history-item:nth-child(even) {
-            background-color: rgba(0,0,0,0.05);
-        }
-
-        .hot {
-            background-color: rgba(255, 0, 0, 0.1);
-        }
-
-        .new-game-btn {
+        .delete-btn {
             background-color: var(--error-color);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
         }
 
-        .progress-container {
-            width: 100%;
-            height: 10px;
-            background-color: #ddd;
-            border-radius: 5px;
-            margin: 15px 0;
-            overflow: hidden;
+        .admin-panel {
+            background-color: #ffeb3b;
+            color: #000;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
         }
 
-        .progress-bar {
-            height: 100%;
-            border-radius: 5px;
-            background-color: var(--header-color);
-            width: 100%;
-            transition: width 0.3s, background-color 0.3s;
-        }
-
-        /* Стили для фото */
-        .photo-container {
-            background-color: var(--card-bg);
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            width: calc(100% - 30px);
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .profile-photo {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            aspect-ratio: 1/1;
-            margin: 0 auto;
-            border-radius: 10px;
-            overflow: hidden;
-            border: none;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s;
-        }
-
-        .profile-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-photo:hover {
-            transform: scale(1.02);
+        .hidden {
+            display: none;
         }
 
         footer {
             background-color: var(--header-color);
             color: white;
-            padding: 15px;
+            padding: 1rem;
             text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        /* Адаптивные стили */
-        @media (max-width: 768px) {
-            header {
-                padding: 12px;
-            }
-            
-            h1 {
-                font-size: 24px;
-            }
-            
-            h2 {
-                font-size: 20px;
-            }
-            
-            .card {
-                padding: 15px;
-            }
-            
-            button {
-                padding: 10px 15px;
-                font-size: 15px;
-                min-width: 110px;
-            }
-            
-            #theme-toggle {
-                top: 10px;
-                right: 10px;
-                font-size: 13px;
-                padding: 6px 10px;
-            }
-            
-            #guess-input {
-                padding: 10px 12px;
-                font-size: 15px;
-            }
-            
-            .photo-container {
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .card {
-                margin: 10px auto;
-                width: calc(100% - 20px);
-            }
-            
-            button {
-                width: 100%;
-                margin: 5px 0;
-            }
-            
-            .button-group {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            #history {
-                font-size: 13px;
-            }
         }
     </style>
 </head>
 <body>
-    <button id="theme-toggle" aria-label="Переключить тему">🌓 Тёмная тема</button>
-
     <header>
         <h1>MEGAPAGE</h1>
+        <div class="auth-buttons">
+            <button id="login-btn">Вход</button>
+            <button id="register-btn">Регистрация</button>
+            <button id="logout-btn" class="hidden">Выйти</button>
+        </div>
     </header>
 
     <main>
-        <div class="card">
-            <h2>Интерактивные возможности</h2>
-            <p>Наслаждайтесь плавными анимациями и адаптивным дизайном на любом устройстве!</p>
+        <!-- Формы авторизации -->
+        <div id="login-form" class="card hidden">
+            <h2>Вход</h2>
+            <input type="text" id="login-username" placeholder="Имя пользователя">
+            <input type="password" id="login-password" placeholder="Пароль">
+            <button id="submit-login">Войти</button>
+            <button id="cancel-login">Отмена</button>
         </div>
 
-        <div class="card">
-            <h2>Тёмная тема</h2>
-            <p>Нажмите кнопку в углу, чтобы изменить цветовую тему сайта.</p>
+        <div id="register-form" class="card hidden">
+            <h2>Регистрация</h2>
+            <input type="text" id="register-username" placeholder="Имя пользователя">
+            <input type="password" id="register-password" placeholder="Пароль">
+            <input type="password" id="register-confirm" placeholder="Подтвердите пароль">
+            <button id="submit-register">Зарегистрироваться</button>
+            <button id="cancel-register">Отмена</button>
         </div>
 
-        <div class="card" id="game">
-            <h2>Мини-игра: Угадай число</h2>
-            <p>Я загадал число от 1 до 100. У вас есть 10 попыток!</p>
-            
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar"></div>
-            </div>
-            
-            <div id="attempts-counter">Попыток: 0/10</div>
-            
-            <input type="number" id="guess-input" min="1" max="100" placeholder="Введите число" aria-label="Введите число">
-            
-            <div class="button-group">
-                <button onclick="checkGuess()">Проверить</button>
-                <button class="new-game-btn" onclick="newGame()">Новая игра</button>
-            </div>
-            
-            <p id="hint" aria-live="polite"></p>
-            
-            <div id="history">
-                <strong>История попыток:</strong>
-                <div id="history-list"></div>
-            </div>
+        <!-- Блок комментариев -->
+        <div id="comments-section" class="card">
+            <h2>Комментарии</h2>
+            <div id="comments-list"></div>
+            <textarea id="comment-text" placeholder="Оставьте ваш комментарий"></textarea>
+            <button id="submit-comment">Отправить</button>
         </div>
 
-        <!-- Контейнер с фото -->
-        <div class="photo-container">
-            <div class="profile-photo">
-                <img src="myphoto.jpg" alt="Пример изображения">
-            </div>
+        <!-- Админ-панель -->
+        <div id="admin-panel" class="admin-panel hidden">
+            <h2>Админ-панель</h2>
+            <div id="admin-comments-list"></div>
         </div>
     </main>
 
     <footer>
-        <p>© ООО "ГоДэмм" 2025</p>
+        <p>© 2023</p>
     </footer>
 
     <script>
-        // Тёмная тема
-        const themeToggle = document.getElementById('theme-toggle');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        // Проверка предпочтений системы
-        if (prefersDark) {
-            document.body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️ Светлая тема';
-        }
+        // Данные пользователей и комментариев
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let comments = JSON.parse(localStorage.getItem('comments')) || [];
+        let currentUser = null;
+        const ADMIN_USERNAME = 'admin';
 
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            themeToggle.textContent = isDark ? '☀️ Светлая тема' : '🌓 Тёмная тема';
-            
-            // Сохранение предпочтений
-            localStorage.setItem('darkMode', isDark);
+        // DOM элементы
+        const loginBtn = document.getElementById('login-btn');
+        const registerBtn = document.getElementById('register-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const commentsSection = document.getElementById('comments-section');
+        const commentsList = document.getElementById('comments-list');
+        const adminPanel = document.getElementById('admin-panel');
+        const adminCommentsList = document.getElementById('admin-comments-list');
+
+        // Инициализация
+        checkAuth();
+
+        // Обработчики событий
+        loginBtn.addEventListener('click', () => {
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
         });
 
-        // Проверка сохранённых предпочтений
-        if (localStorage.getItem('darkMode') === 'true') {
-            document.body.classList.add('dark-mode');
-            themeToggle.textContent = '☀️ Светлая тема';
+        registerBtn.addEventListener('click', () => {
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+
+        logoutBtn.addEventListener('click', logout);
+
+        document.getElementById('cancel-login').addEventListener('click', () => {
+            loginForm.classList.add('hidden');
+        });
+
+        document.getElementById('cancel-register').addEventListener('click', () => {
+            registerForm.classList.add('hidden');
+        });
+
+        document.getElementById('submit-login').addEventListener('click', login);
+        document.getElementById('submit-register').addEventListener('click', register);
+        document.getElementById('submit-comment').addEventListener('click', addComment);
+
+        // Функции
+        function checkAuth() {
+            const authUser = localStorage.getItem('currentUser');
+            if (authUser) {
+                currentUser = JSON.parse(authUser);
+                updateUI();
+            }
         }
 
-        // Анимации при скролле с троттлингом
-        let isScrolling;
-        const cards = document.querySelectorAll('.card');
-        
-        function checkCards() {
-            cards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                if (cardTop < window.innerHeight - 100) {
-                    card.classList.add('visible');
-                }
-            });
+        function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                loginForm.classList.add('hidden');
+                updateUI();
+            } else {
+                alert('Неверное имя пользователя или пароль');
+            }
         }
-        
-        window.addEventListener('scroll', () => {
-            window.clearTimeout(isScrolling);
-            isScrolling = setTimeout(checkCards, 50);
-        }, { passive: true });
-        
-        checkCards(); // Проверить при загрузке
 
-        // Мини-игра
-        let secretNumber = Math.floor(Math.random() * 100) + 1;
-        let attempts = 0;
-        const maxAttempts = 10;
-        let gameOver = false;
+        function register() {
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const confirm = document.getElementById('register-confirm').value;
 
-        function checkGuess() {
-            if (gameOver) return;
-            
-            const guessInput = document.getElementById('guess-input');
-            const guess = parseInt(guessInput.value);
-            const hint = document.getElementById('hint');
-            const historyList = document.getElementById('history-list');
-            const counter = document.getElementById('attempts-counter');
-            const progressBar = document.getElementById('progress-bar');
-
-            if (isNaN(guess) || guess < 1 || guess > 100) {
-                hint.textContent = 'Пожалуйста, введите число от 1 до 100!';
-                hint.className = 'error';
-                guessInput.focus();
+            if (password !== confirm) {
+                alert('Пароли не совпадают');
                 return;
             }
 
-            attempts++;
-            counter.textContent = `Попыток: ${attempts}/${maxAttempts}`;
-            progressBar.style.width = `${100 - (attempts * 10)}%`;
+            if (users.some(u => u.username === username)) {
+                alert('Пользователь с таким именем уже существует');
+                return;
+            }
 
-            // Добавляем в историю
-            const distance = Math.abs(guess - secretNumber);
-            const historyItem = document.createElement('div');
-            historyItem.className = 'history-item';
-            if (distance <= 5) historyItem.classList.add('hot');
+            const newUser = { username, password };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
             
-            historyItem.innerHTML = `
-                <span>Попытка ${attempts}: <strong>${guess}</strong></span>
-                <span>${getDistanceEmoji(distance)} ${getDistanceText(distance)}</span>
-            `;
-            historyList.prepend(historyItem);
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            registerForm.classList.add('hidden');
+            updateUI();
+        }
 
-            // Проверка угадывания
-            if (guess === secretNumber) {
-                hint.innerHTML = '🎉 <strong>Поздравляем!</strong> Вы угадали число ' + secretNumber + ' за ' + attempts + ' попыток!';
-                hint.className = 'success';
-                gameOver = true;
-                progressBar.style.backgroundColor = 'var(--success-color)';
-                guessInput.disabled = true;
-            } else if (attempts >= maxAttempts) {
-                hint.innerHTML = '😢 <strong>Игра окончена!</strong> Было загадано число: ' + secretNumber;
-                hint.className = 'error';
-                gameOver = true;
-                progressBar.style.width = '0%';
-                guessInput.disabled = true;
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUI();
+        }
+
+        function addComment() {
+            if (!currentUser) {
+                alert('Для добавления комментария необходимо авторизоваться');
+                return;
+            }
+
+            const text = document.getElementById('comment-text').value;
+            if (!text.trim()) {
+                alert('Комментарий не может быть пустым');
+                return;
+            }
+
+            const newComment = {
+                id: Date.now(),
+                username: currentUser.username,
+                text: text,
+                date: new Date().toLocaleString()
+            };
+
+            comments.push(newComment);
+            localStorage.setItem('comments', JSON.stringify(comments));
+            document.getElementById('comment-text').value = '';
+            renderComments();
+        }
+
+        function deleteComment(id) {
+            comments = comments.filter(c => c.id !== id);
+            localStorage.setItem('comments', JSON.stringify(comments));
+            renderComments();
+            renderAdminComments();
+        }
+
+        function updateUI() {
+            if (currentUser) {
+                loginBtn.classList.add('hidden');
+                registerBtn.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                commentsSection.classList.remove('hidden');
+
+                if (currentUser.username === ADMIN_USERNAME) {
+                    adminPanel.classList.remove('hidden');
+                    renderAdminComments();
+                } else {
+                    adminPanel.classList.add('hidden');
+                }
             } else {
-                hint.textContent = guess < secretNumber ? '⬆️ Загаданное число больше' : '⬇️ Загаданное число меньше';
-                hint.className = '';
+                loginBtn.classList.remove('hidden');
+                registerBtn.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                commentsSection.classList.add('hidden');
+                adminPanel.classList.add('hidden');
             }
 
-            guessInput.value = '';
-            guessInput.focus();
+            renderComments();
         }
 
-        function getDistanceEmoji(distance) {
-            if (distance === 0) return '🎯';
-            if (distance <= 3) return '🔥';
-            if (distance <= 10) return '🔍';
-            if (distance <= 20) return '👀';
-            return '🌌';
+        function renderComments() {
+            commentsList.innerHTML = '';
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                commentElement.innerHTML = `
+                    <div class="comment-header">
+                        <span>${comment.username}</span>
+                        <span>${comment.date}</span>
+                    </div>
+                    <p>${comment.text}</p>
+                `;
+                commentsList.appendChild(commentElement);
+            });
         }
 
-        function getDistanceText(distance) {
-            if (distance === 0) return 'Победа!';
-            if (distance <= 3) return 'Горячо!';
-            if (distance <= 10) return 'Тепло';
-            if (distance <= 20) return 'Холодно';
-            return 'Очень холодно';
+        function renderAdminComments() {
+            adminCommentsList.innerHTML = '<h3>Все комментарии</h3>';
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment';
+                commentElement.innerHTML = `
+                    <div class="comment-header">
+                        <span>${comment.username}</span>
+                        <span>${comment.date}</span>
+                        <button class="delete-btn" data-id="${comment.id}">Удалить</button>
+                    </div>
+                    <p>${comment.text}</p>
+                `;
+                adminCommentsList.appendChild(commentElement);
+            });
+
+            // Добавляем обработчики для кнопок удаления
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(e.target.getAttribute('data-id'));
+                    deleteComment(id);
+                });
+            });
         }
 
-        function newGame() {
-            secretNumber = Math.floor(Math.random() * 100) + 1;
-            attempts = 0;
-            gameOver = false;
-            
-            document.getElementById('hint').textContent = '';
-            document.getElementById('hint').className = '';
-            document.getElementById('history-list').innerHTML = '';
-            document.getElementById('attempts-counter').textContent = 'Попыток: 0/10';
-            document.getElementById('guess-input').disabled = false;
-            document.getElementById('guess-input').focus();
-            document.getElementById('progress-bar').style.width = '100%';
-            document.getElementById('progress-bar').style.backgroundColor = 'var(--header-color)';
+        // Создаем администратора при первом запуске
+        if (!users.some(u => u.username === ADMIN_USERNAME)) {
+            users.push({ username: ADMIN_USERNAME, password: 'admin123' });
+            localStorage.setItem('users', JSON.stringify(users));
         }
-
-        // Обработка нажатия Enter в поле ввода
-        document.getElementById('guess-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkGuess();
-            }
-        });
-
-        // Адаптация для мобильных устройств
-        function handleMobileFeatures() {
-            if (window.innerWidth < 768) {
-                document.documentElement.style.fontSize = '15px';
-            } else {
-                document.documentElement.style.fontSize = '16px';
-            }
-        }
-
-        window.addEventListener('load', handleMobileFeatures);
-        window.addEventListener('resize', handleMobileFeatures);
     </script>
 </body>
 </html>
